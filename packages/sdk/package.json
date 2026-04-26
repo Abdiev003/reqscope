@@ -1,5 +1,5 @@
 {
-  "name": "@reqscope/sdk",
+  "name": "@abdiev003/reqscope",
   "version": "0.0.1",
   "description": "Local API request tracing SDK for Node.js and Express.",
   "main": "dist/index.js",
