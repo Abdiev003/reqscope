@@ -4,6 +4,7 @@ import { printTrace } from "./logger";
 import { addTrace, clearTraces, getTraces } from "./store";
 import { sanitizeValue } from "./sanitize";
 import { createPreview } from "./preview";
+import { runWithTrace } from "./context";
 
 const DEFAULT_OPTIONS: Required<ReqScopeOptions> = {
   enabled: process.env.NODE_ENV !== "production",
@@ -141,7 +142,9 @@ export function reqscope(options: ReqScopeOptions = {}) {
       printTrace(trace);
     });
 
-    next();
+    runWithTrace(trace, () => {
+      next();
+    });
   };
 }
 

@@ -6,5 +6,5 @@ export type {
   ReqScopeTrace,
   ReqScopeStep,
   ReqScopeStepStatus,
-  ReqScopeOptions,
+  ReqScopeOptions
 } from "./types";

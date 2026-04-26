@@ -65,7 +65,7 @@ app.use(
 
 app.post("/login", async (req, res, next) => {
   try {
-    const user = await traceStep(req, "findUserByEmail", async () => {
+    const user = await traceStep("findUserByEmail", async () => {
       return db.user.findUnique({
         where: {
           email: req.body.email,
@@ -73,7 +73,7 @@ app.post("/login", async (req, res, next) => {
       });
     });
 
-    const token = await traceStep(req, "createAccessToken", async () => {
+    const token = await traceStep("createAccessToken", async () => {
       return createToken(user);
     });
 

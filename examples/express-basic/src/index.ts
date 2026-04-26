@@ -41,8 +41,8 @@ app.get("/", async (req, res) => {
   res.json(data);
 });
 
-app.get("/slow", async (req, res) => {
-  const user = await traceStep(req, "findUserFromDatabase", async () => {
+app.get("/slow", async (_req, res) => {
+  const user = await traceStep("findUserFromDatabase", async () => {
     await wait(260);
 
     return {
@@ -51,7 +51,7 @@ app.get("/slow", async (req, res) => {
     };
   });
 
-  const permissions = await traceStep(req, "loadUserPermissions", async () => {
+  const permissions = await traceStep("loadUserPermissions", async () => {
     await wait(80);
 
     return ["read", "write"];
@@ -64,9 +64,9 @@ app.get("/slow", async (req, res) => {
   });
 });
 
-app.get("/error", async (req, res) => {
+app.get("/error", async (_req, res) => {
   try {
-    await traceStep(req, "dangerousOperation", async () => {
+    await traceStep("dangerousOperation", async () => {
       await wait(30);
       throw new Error("Database connection failed");
     });
@@ -81,39 +81,43 @@ app.get("/error", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res) => {
-  const payload = traceStep(req, "validatePayload", () => {
-    if (!req.body.email) {
-      throw new Error("Email is required");
-    }
+app.post("/login", async (req, res, next) => {
+  try {
+    const payload = traceStep("validatePayload", () => {
+      if (!req.body.email) {
+        throw new Error("Email is required");
+      }
 
-    return {
-      email: req.body.email,
-    };
-  });
+      return {
+        email: req.body.email,
+      };
+    });
 
-  const user = await traceStep(req, "findUserByEmail", async () => {
-    await wait(140);
+    const user = await traceStep("findUserByEmail", async () => {
+      await wait(140);
 
-    return {
-      id: 1,
-      email: payload.email,
-    };
-  });
+      return {
+        id: 1,
+        email: payload.email,
+      };
+    });
 
-  const token = await traceStep(req, "createAccessToken", async () => {
-    await wait(40);
+    const token = await traceStep("createAccessToken", async () => {
+      await wait(40);
 
-    return "mock_token";
-  });
+      return "mock_token";
+    });
 
-  res.setHeader("x-request-id", "demo-request-id");
-  res.setHeader("set-cookie", "session=super-secret-cookie");
+    res.setHeader("x-request-id", "demo-request-id");
+    res.setHeader("set-cookie", "session=super-secret-cookie");
 
-  res.json({
-    user,
-    token,
-  });
+    res.json({
+      user,
+      token,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.listen(3000, () => {
