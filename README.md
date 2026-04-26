@@ -45,7 +45,7 @@ npm i @abdiev003/reqscope
 
 ```ts
 import express from "express";
-import { reqscope, traceStep } from "@abdiev003/reqscope";
+import { reqscope, reqscopeErrorHandler, traceStep } from "@abdiev003/reqscope";
 
 const app = express();
 
@@ -53,6 +53,7 @@ app.use(express.json());
 
 app.use(
   reqscope({
+    enabled: process.env.NODE_ENV !== "production",
     slowRequestThreshold: 300,
     slowStepThreshold: 100,
     endpointPrefix: "/__reqscope",
@@ -62,24 +63,43 @@ app.use(
   }),
 );
 
-app.post("/login", async (req, res) => {
-  const user = await traceStep(req, "findUserByEmail", async () => {
-    return db.user.findUnique({
-      where: {
-        email: req.body.email,
-      },
+app.post("/login", async (req, res, next) => {
+  try {
+    const user = await traceStep(req, "findUserByEmail", async () => {
+      return db.user.findUnique({
+        where: {
+          email: req.body.email,
+        },
+      });
     });
-  });
 
-  const token = await traceStep(req, "createAccessToken", async () => {
-    return createToken(user);
-  });
+    const token = await traceStep(req, "createAccessToken", async () => {
+      return createToken(user);
+    });
 
-  res.json({
-    user,
-    token,
-  });
+    res.json({
+      user,
+      token,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
+
+app.use(reqscopeErrorHandler());
+
+app.use(
+  (
+    error: unknown,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction,
+  ) => {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  },
+);
 
 app.listen(3000);
 ```
@@ -93,9 +113,12 @@ GET /__reqscope/traces
 GET /__reqscope/clear
 ```
 
-Run the dashboard:
+The dashboard is currently available from the repository during MVP development.
 
 ```bash
+git clone https://github.com/YOUR_USERNAME/reqscope.git
+cd reqscope
+npm install
 npm run dev:dashboard
 ```
 
@@ -113,14 +136,15 @@ VITE_REQSCOPE_API_URL=http://localhost:4000
 
 ## Options
 
-| Option                 |       Type |        Default | Description                                                           |
-| ---------------------- | ---------: | -------------: | --------------------------------------------------------------------- |
-| `slowRequestThreshold` |   `number` |          `300` | Marks a request as slow when total duration exceeds this value in ms. |
-| `slowStepThreshold`    |   `number` |          `100` | Marks a traced step as slow when duration exceeds this value in ms.   |
-| `endpointPrefix`       |   `string` |  `/__reqscope` | Prefix for internal ReqScope endpoints.                               |
-| `sensitiveFields`      | `string[]` | common secrets | Fields to redact from previews.                                       |
-| `maxPreviewSize`       |   `number` |         `5000` | Maximum serialized preview size.                                      |
-| `maxTraces`            |   `number` |          `100` | Maximum number of traces stored in memory.                            |
+| Option                 |       Type |                     Default | Description                                                           |
+| ---------------------- | ---------: | --------------------------: | --------------------------------------------------------------------- |
+| `enabled`              |  `boolean` | `NODE_ENV !== "production"` | Enables or disables ReqScope. Disabled by default in production.      |
+| `slowRequestThreshold` |   `number` |                       `300` | Marks a request as slow when total duration exceeds this value in ms. |
+| `slowStepThreshold`    |   `number` |                       `100` | Marks a traced step as slow when duration exceeds this value in ms.   |
+| `endpointPrefix`       |   `string` |               `/__reqscope` | Prefix for internal ReqScope endpoints.                               |
+| `sensitiveFields`      | `string[]` |              common secrets | Fields to redact from previews.                                       |
+| `maxPreviewSize`       |   `number` |                      `5000` | Maximum serialized preview size.                                      |
+| `maxTraces`            |   `number` |                       `100` | Maximum number of traces stored in memory.                            |
 
 ## Sensitive data masking
 
