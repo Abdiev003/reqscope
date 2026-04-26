@@ -1,0 +1,35 @@
+{
+  "name": "@reqscope/sdk",
+  "version": "0.0.1",
+  "description": "Local API request tracing SDK for Node.js and Express.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "api",
+    "debugger",
+    "tracing",
+    "express",
+    "developer-tools",
+    "observability"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "express": ">=4"
+  },
+  "devDependencies": {
+    "@types/express": "latest",
+    "@types/node": "latest",
+    "express": "latest",
+    "typescript": "latest"
+  }
+}

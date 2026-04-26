@@ -1,0 +1,29 @@
+{
+  "name": "@reqscope/dashboard",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Local dashboard for ReqScope API request tracing.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 4545",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4545"
+  },
+  "keywords": [
+    "api",
+    "debugger",
+    "tracing",
+    "dashboard",
+    "developer-tools"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}
