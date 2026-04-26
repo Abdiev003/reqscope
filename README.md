@@ -38,14 +38,14 @@ So you can quickly answer:
 ## Installation
 
 ```bash
-npm install @reqscope/sdk
+npm i @abdiev003/reqscope
 ```
 
 ## Express usage
 
 ```ts
 import express from "express";
-import { reqscope, traceStep } from "@reqscope/sdk";
+import { reqscope, traceStep } from "@abdiev003/reqscope";
 
 const app = express();
 
@@ -58,16 +58,16 @@ app.use(
     endpointPrefix: "/__reqscope",
     maxPreviewSize: 5000,
     maxTraces: 100,
-    sensitiveFields: ["password", "token", "secret"]
-  })
+    sensitiveFields: ["password", "token", "secret"],
+  }),
 );
 
 app.post("/login", async (req, res) => {
   const user = await traceStep(req, "findUserByEmail", async () => {
     return db.user.findUnique({
       where: {
-        email: req.body.email
-      }
+        email: req.body.email,
+      },
     });
   });
 
@@ -77,7 +77,7 @@ app.post("/login", async (req, res) => {
 
   res.json({
     user,
-    token
+    token,
   });
 });
 
@@ -113,14 +113,14 @@ VITE_REQSCOPE_API_URL=http://localhost:4000
 
 ## Options
 
-| Option | Type | Default | Description |
-|---|---:|---:|---|
-| `slowRequestThreshold` | `number` | `300` | Marks a request as slow when total duration exceeds this value in ms. |
-| `slowStepThreshold` | `number` | `100` | Marks a traced step as slow when duration exceeds this value in ms. |
-| `endpointPrefix` | `string` | `/__reqscope` | Prefix for internal ReqScope endpoints. |
-| `sensitiveFields` | `string[]` | common secrets | Fields to redact from previews. |
-| `maxPreviewSize` | `number` | `5000` | Maximum serialized preview size. |
-| `maxTraces` | `number` | `100` | Maximum number of traces stored in memory. |
+| Option                 |       Type |        Default | Description                                                           |
+| ---------------------- | ---------: | -------------: | --------------------------------------------------------------------- |
+| `slowRequestThreshold` |   `number` |          `300` | Marks a request as slow when total duration exceeds this value in ms. |
+| `slowStepThreshold`    |   `number` |          `100` | Marks a traced step as slow when duration exceeds this value in ms.   |
+| `endpointPrefix`       |   `string` |  `/__reqscope` | Prefix for internal ReqScope endpoints.                               |
+| `sensitiveFields`      | `string[]` | common secrets | Fields to redact from previews.                                       |
+| `maxPreviewSize`       |   `number` |         `5000` | Maximum serialized preview size.                                      |
+| `maxTraces`            |   `number` |          `100` | Maximum number of traces stored in memory.                            |
 
 ## Sensitive data masking
 
@@ -151,7 +151,7 @@ You can add custom fields:
 
 ```ts
 reqscope({
-  sensitiveFields: ["email", "phone"]
+  sensitiveFields: ["email", "phone"],
 });
 ```
 
