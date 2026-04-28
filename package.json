@@ -10,6 +10,7 @@
     "dev:dashboard": "npm run dev -w packages/dashboard",
     "build:sdk": "npm run build -w packages/sdk",
     "build:dashboard": "npm run build -w packages/dashboard",
+    "build:demo": "npm run build:dashboard && rm -rf demo/public && cp -R packages/dashboard/dist demo/public",
     "build": "npm run build:sdk && npm run build:dashboard"
   }
 }

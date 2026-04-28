@@ -658,6 +658,42 @@ button {
   font-size: 13px;
 }
 
+.demo-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.demo-controls > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.demo-controls strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.demo-controls span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.demo-controls-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .request-preview {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

@@ -2,6 +2,12 @@
 
 ReqScope is a local API request tracing tool for Node.js and Express.
 
+## Try it online
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/Abdiev003/reqscope/tree/main/demo)
+
+The sandbox boots an Express server with ReqScope and the dashboard at the same URL. See [`demo/`](./demo) for details.
+
 It helps you inspect:
 
 - request duration

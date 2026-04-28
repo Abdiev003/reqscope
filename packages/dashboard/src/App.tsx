@@ -1,5 +1,6 @@
 import React from "react";
-import { clearTraces, fetchTraces } from "./api";
+import { clearTraces, fetchTraces, IS_DEMO_MODE } from "./api";
+import { DemoControls } from "./components/DemoControls";
 import { Metrics } from "./components/Metrics";
 import { RequestList } from "./components/RequestList";
 import { Topbar } from "./components/Topbar";
@@ -104,6 +105,8 @@ export function App() {
           </small>
         </div>
       ) : null}
+
+      {IS_DEMO_MODE ? <DemoControls /> : null}
 
       <Metrics traces={traces} />
 

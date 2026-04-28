@@ -1,0 +1,16 @@
+{
+  "name": "reqscope-demo",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@abdiev003/reqscope": "latest",
+    "express": "^4.21.0"
+  },
+  "stackblitz": {
+    "startCommand": "npm install && npm start"
+  }
+}
