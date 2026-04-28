@@ -2,6 +2,8 @@
 
 ReqScope is a local API request tracing tool for Node.js and Express.
 
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/Abdiev003/reqscope/tree/main/demo)
+
 It helps you inspect:
 
 - request duration
@@ -38,14 +40,18 @@ So you can quickly answer:
 ## Installation
 
 ```bash
-npm install @reqscope/sdk
+npm install @abdiev003/reqscope
 ```
 
 ## Express usage
 
 ```ts
 import express from "express";
-import { reqscope, traceStep } from "@reqscope/sdk";
+import {
+  reqscope,
+  reqscopeErrorHandler,
+  traceStep,
+} from "@abdiev003/reqscope";
 
 const app = express();
 
@@ -53,33 +59,35 @@ app.use(express.json());
 
 app.use(
   reqscope({
+    enabled: process.env.NODE_ENV !== "production",
     slowRequestThreshold: 300,
     slowStepThreshold: 100,
     endpointPrefix: "/__reqscope",
     maxPreviewSize: 5000,
     maxTraces: 100,
-    sensitiveFields: ["password", "token", "secret"]
-  })
+    sensitiveFields: ["password", "token", "secret"],
+  }),
 );
 
-app.post("/login", async (req, res) => {
-  const user = await traceStep(req, "findUserByEmail", async () => {
-    return db.user.findUnique({
-      where: {
-        email: req.body.email
-      }
+app.post("/login", async (req, res, next) => {
+  try {
+    const user = await traceStep("findUserByEmail", async () => {
+      return db.user.findUnique({
+        where: { email: req.body.email },
+      });
     });
-  });
 
-  const token = await traceStep(req, "createAccessToken", async () => {
-    return createToken(user);
-  });
+    const token = await traceStep("createAccessToken", async () => {
+      return createToken(user);
+    });
 
-  res.json({
-    user,
-    token
-  });
+    res.json({ user, token });
+  } catch (error) {
+    next(error);
+  }
 });
+
+app.use(reqscopeErrorHandler());
 
 app.listen(3000);
 ```
